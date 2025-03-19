@@ -21,7 +21,11 @@ const SignIn: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        Swal.fire({
+
+        navigate("/Admin/Dashboard")
+        return;
+        
+                Swal.fire({
             title: "Logging...",
             text: "Please wait.",
             allowOutsideClick: false,
