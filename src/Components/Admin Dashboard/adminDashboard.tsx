@@ -8,10 +8,12 @@ import TablePagination from '../Child Component/TablePagination';
 import Loader from '../Loader/Loader';
 import { organizations } from '../Types/Organization';
 import AdminDashboardLayout from './adminDashboardLayout';
+import { Users } from '../Types/Users';
+import { Tasks } from '../Types/Task';
 
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
-    const [Organization, setOrganization] = useState<organizations[]>([]);
+    const [Organization, setOrganization] = useState<Tasks[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(10);
@@ -21,9 +23,11 @@ const AdminDashboard: React.FC = () => {
     };
 
     const input = [
-        { name: 'Sr.', key: 'srNo' },
-        { name: 'Organization Name', key: 'organizationName' },
-        { name: 'No. of Employee', key: 'employeeCount' },
+        { name: 'Tak Subject', key: 'task_subject' },
+        { name: 'Tssk Detail', key: 'task_detail' },
+        { name: 'Assignee To', key: 'assignee_to' },
+        { name: 'Status', key: 'status' },
+        
     ];
 
     useEffect(() => {
@@ -31,11 +35,13 @@ const AdminDashboard: React.FC = () => {
             try {
                 const response = await axios.get(
                     getUrl(API_URL) +
-                    EndPoints.getAllOrganizations +
-                    `?page=${currentPage}&pageSize=${10}`
+                    EndPoints.getAllTask 
+                    
                 );
-                setOrganization(response.data.data);
-                setTotalPages(response.data.pagination.totalItems ?? 10);
+                setOrganization(response.data.body.data);
+                console.log(response.data.body.data, 'response');
+            
+                // setTotalPages(response.data.pagination.totalItems ?? 10);
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
@@ -67,10 +73,7 @@ const AdminDashboard: React.FC = () => {
             .then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        await axios.delete(
-                            `${getUrl(API_URL)}${EndPoints.deleteOrganization
-                            }/${id}`
-                        );
+   await axios.delete(`${getUrl(API_URL)}${EndPoints.deleteTask}/?_id=${id}`);
                         swalWithBootstrapButtons
                             .fire({
                                 title: 'Deleted!',
@@ -96,6 +99,10 @@ const AdminDashboard: React.FC = () => {
                 }
             });
     };
+
+
+    console.log(Organization, 'Organization');
+    
     if (loading)
         return (
             <div>
@@ -139,7 +146,7 @@ const AdminDashboard: React.FC = () => {
                         <tbody>
                             {Organization.map((Organization: any) => (
                                 <tr
-                                    key={Organization.id}
+                                    key={Organization._id}
                                     className='border-b border-gray-400'
                                 >
                                     {input.map((item) => (
@@ -157,7 +164,7 @@ const AdminDashboard: React.FC = () => {
                                                 size={20}
                                                 onClick={() =>
                                                     navigate(
-                                                        `/Admin/AddNewTask/?id=${Organization.id}&mode=View`
+                                                        `/Admin/AddNewTask/?id=${Organization._id}&mode=View`
                                                     )
                                                 }
                                             />
@@ -168,7 +175,7 @@ const AdminDashboard: React.FC = () => {
                                                 className='bg-[#F3632D] text-white rounded-lg px-8 pt-1  pb-2 '
                                                 onClick={() =>
                                                     navigate(
-                                                        `/Admin/AddNewTask/?id=${Organization.id}&mode=Edit`
+                                                        `/Admin/AddNewTask/?id=${Organization._id}&mode=Edit`
                                                     )
                                                 }
                                             >
@@ -181,7 +188,7 @@ const AdminDashboard: React.FC = () => {
                                                 className='bg-[#E14640] text-white rounded-lg px-8 pt-1  pb-2 '
                                                 onClick={() =>
                                                     handleDelete(
-                                                        Organization.id
+                                                        Organization._id
                                                     )
                                                 }
                                             >
@@ -194,11 +201,7 @@ const AdminDashboard: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-                <TablePagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
+               
             </div>
         </AdminDashboardLayout>
     );

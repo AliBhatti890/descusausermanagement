@@ -1,15 +1,16 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
 import { organizations } from '../Types/Organization';
 import WYSIWYGEditor from '../Child Component/Editor';
 import AdminDashboardLayout from './adminDashboardLayout';
+import { Tasks } from '../Types/Task';
 
-const AddNewTask: React.FC = () => {
-    const [organization, setOrganization] = useState<organizations>({} as any);
+const AdminAddNewTask: React.FC = () => {
+    const [organization, setOrganization] = useState<Record<string, any>>({});
 
     const status = [
         { label: 'Pending', value: '1' },
@@ -28,7 +29,7 @@ const AddNewTask: React.FC = () => {
         },
         {
             name: 'Status',
-            key: 'fiscalYearEnd',
+            key: 'status',
             type: 'dropdown',
             options: status
         },
@@ -46,17 +47,18 @@ const AddNewTask: React.FC = () => {
         const fetchPositions = async () => {
             if (id === null) return;
             try {
-                const response = await axios.get(
-                    `${getUrl(API_URL)}${EndPoints.getOrganizationById}/${id}`
+                 const response = await axios.get(
+                    `${getUrl(API_URL)}${EndPoints.getTaskById}?_id=${id}`
                 );
+                console.log(response.data.data, 'response');
+                
                 response.data &&
                     setOrganization({
-                        organizationName: response.data.organizationName,
-                        natureOfWork: response.data.natureOfWork,
-                        fiscalYearStart: response.data.fiscalYearStart,
-                        fiscalYearEnd: response.data.fiscalYearEnd,
-                        generalPolicy: response.data.generalPolicy,
-                        isActive: response.data.isActive
+                        task_subject: response.data.data.task_subject,
+                        task_detail: response.data.data.task_detail,
+                        assignee_to: response.data.data.assignee_to,
+                        status: response.data.data.status
+
                     } as any);
             } catch (err) {}
         };
@@ -71,9 +73,7 @@ const AddNewTask: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (organization.organizationName.length > 20) {
-            return alert('Organization Name should be less than 20 characters');
-        }
+      
         try {
             Swal.fire({
                 title: 'Logging...',
@@ -84,28 +84,30 @@ const AddNewTask: React.FC = () => {
                 }
             });
             if (mode === 'Edit') {
-                organization.id = id || 'null';
-                organization.updatedBy = user?.userName as any;
+                organization._id = id || 'null';
                 await axios.put(
-                    `${getUrl(API_URL)}${EndPoints.updateOrganization}`,
+                    `${getUrl(API_URL)}${EndPoints.updateTask}`,
                     organization
                 );
             } else {
-                organization.createdBy = user?.userName as any;
-                await axios.post(
-                    `${getUrl(API_URL)}${EndPoints.createOrganization}`,
+                console.log(organization, 'organization');
+                
+            const response=    await axios.post(
+                    `${getUrl(API_URL)}${EndPoints.createTask}`,
                     organization
                 );
+                console.log(response.data, 'response');
+                return
             }
             Swal.fire({
-                title: 'Organization saved successfully',
+                title: 'Task created',
                 icon: 'success',
                 showDenyButton: false,
                 showCancelButton: false,
                 confirmButtonText: 'Ok'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    navigate('/Organizations');
+                    navigate('/Admin/Dashboard');
                 }
             });
         } catch (error: any) {
@@ -183,19 +185,17 @@ const AddNewTask: React.FC = () => {
                                         </select>
                                     ) :  input.type === 'textarea' ? (
                                         <WYSIWYGEditor
-                                            key={input.key}
-                                            id={input.key}
-                                            name={input.key}
-                                            placeholder={`Enter ${input.name}...`}
-                                            value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
-                                            }
-                                            onChange={(value: string) =>
-                                                handleChange(input.key, value)
-                                            }
-                                        />
+                                                key={input.key}
+                                                id={input.key}
+                                                name={input.key}
+                                                placeholder={`Enter ${input.name}...`}
+                                                value={
+                                                    (organization[
+                                                        input.key as keyof organizations
+                                                    ] as any) || ''
+                                                }
+                                                onChange={(value: string) => handleChange(input.key, value)}
+                                                                          />
                                     ) : (
                                         <input
                                             id={input.key}
@@ -203,9 +203,7 @@ const AddNewTask: React.FC = () => {
                                             type={input.type}
                                             placeholder={` ${input.name}`}
                                             value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
+                                                organization[input.key] || ''
                                             }
                                             onChange={(e) =>
                                                 handleChange(
@@ -245,4 +243,4 @@ const AddNewTask: React.FC = () => {
         </AdminDashboardLayout>
     );
 };
-export default AddNewTask;
+export default AdminAddNewTask;

@@ -7,11 +7,12 @@ import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
 import { organizations } from '../Types/Organization';
 import WYSIWYGEditor from '../Child Component/Editor';
 import AdminDashboardLayout from './adminDashboardLayout';
+import { Users } from '../Types/Users';
 
 
 
-const ManagerAddewuser: React.FC = () => {
-    const [organization, setOrganization] = useState<organizations>({} as any);
+const AdminAddewuser: React.FC = () => {
+    const [organization, setOrganization] = useState<Partial<Users>>({});
 
     const usertType = [
         { label: 'Admin', value: '01' },
@@ -20,12 +21,14 @@ const ManagerAddewuser: React.FC = () => {
        
     ];
     const organizationInputs = [
-        { name: 'Full Name', key: 'full_name', type: 'text' },
-        { name: 'Department', key: 'Dpeartment', type: 'text' },
-        { name: 'Contact', key: 'contact', type: 'text' },
+        { name: 'Full Name', key: 'first_name', type: 'text' },
+        { name: 'Department', key: 'department', type: 'text' },
+        { name: 'contact', key: 'contact', type: 'text' },
+        { name: 'email', key: 'email', type: 'text' },
+        { name: 'password', key: 'password', type: 'text' },   
         {
             name: 'User Type',
-            key: 'usert_type',
+            key: 'user_type',
             type: 'dropdown',
             options: usertType
         },
@@ -40,20 +43,31 @@ const ManagerAddewuser: React.FC = () => {
     const user = useSelector((state: { auth: AuthState }) => state.auth.user);
 
     useEffect(() => {
+        console.log(id, 'id');
+        console.log(mode, 'id');
+        
         const fetchPositions = async () => {
+      
+console.log(id, 'id');
+
+
             if (id === null) return;
+            
             try {
                 const response = await axios.get(
-                    `${getUrl(API_URL)}${EndPoints.getOrganizationById}/${id}`
+                    `${getUrl(API_URL)}${EndPoints.getUserById}?_id=${id}`
                 );
+                console.log(response.data.data, 'response');
+                
                 response.data &&
                     setOrganization({
-                        organizationName: response.data.organizationName,
-                        natureOfWork: response.data.natureOfWork,
-                        fiscalYearStart: response.data.fiscalYearStart,
-                        fiscalYearEnd: response.data.fiscalYearEnd,
-                        generalPolicy: response.data.generalPolicy,
-                        isActive: response.data.isActive
+                        first_name: response.data.data.first_name,
+                        department: response.data.data.department,
+                        contact: response.data.data.contact,
+                        email: response.data.data.email,
+               password: response.data.data.password,
+                        user_type: response.data.data.user_type,
+
                     } as any);
             } catch (err) {}
         };
@@ -68,9 +82,7 @@ const ManagerAddewuser: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (organization.organizationName.length > 20) {
-            return alert('Organization Name should be less than 20 characters');
-        }
+      
         try {
             Swal.fire({
                 title: 'Logging...',
@@ -81,28 +93,32 @@ const ManagerAddewuser: React.FC = () => {
                 }
             });
             if (mode === 'Edit') {
-                organization.id = id || 'null';
-                organization.updatedBy = user?.userName as any;
-                await axios.put(
-                    `${getUrl(API_URL)}${EndPoints.updateOrganization}`,
+                organization._id = id || 'null';
+              const response =   await axios.put(
+                    `${getUrl(API_URL)}${EndPoints.updateUser}`,
                     organization
                 );
+
+                console.log(response, 'response');
+              
+                
             } else {
-                organization.createdBy = user?.userName as any;
+              
                 await axios.post(
-                    `${getUrl(API_URL)}${EndPoints.createOrganization}`,
+                    `${getUrl(API_URL)}${EndPoints.createUser}`,
                     organization
                 );
             }
+
             Swal.fire({
-                title: 'Organization saved successfully',
+                title: 'User saved successfully',
                 icon: 'success',
                 showDenyButton: false,
                 showCancelButton: false,
                 confirmButtonText: 'Ok'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    navigate('/Organizations');
+                    navigate('/Admin/UserList');
                 }
             });
         } catch (error: any) {
@@ -148,11 +164,11 @@ const ManagerAddewuser: React.FC = () => {
                                         <select
                                             id={input.key}
                                             name={input.key}
-                                            value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
-                                            }
+                                            // value={
+                                            //     (organization[
+                                            //         input.key as keyof organizations
+                                            //     ] as any) || ''
+                                            // }
                                             onChange={(e) => {
                                                 handleChange(
                                                     input.key,
@@ -178,46 +194,18 @@ const ManagerAddewuser: React.FC = () => {
                                                 </option>
                                             ))}
                                         </select>
-                                    ) : input.type === 'checkbox' ? (
-                                        <input
-                                            id={input.key}
-                                            name={input.key}
-                                            type={input.type}
-                                            checked={
-                                                organization[
-                                                    input.key as keyof organizations
-                                                ] === 'Y'
-                                                    ? true
-                                                    : false
-                                            }
-                                            onChange={(e) => {
-                                                handleChange(
-                                                    input.key,
-                                                    e.target.checked ? 'Y' : 'N'
-                                                );
-                                            }}
-                                            className={`border border-gray-300 p-2 rounded-lg h-10 w-6 text-[15px] text-[#7D7D7D] ${
-                                                mode === 'View'
-                                                    ? 'cursor-not-allowed bg-gray-100'
-                                                    : ''
-                                            }`}
-                                            readOnly={mode === 'View'}
-                                        />
                                     ) : input.type === 'textarea' ? (
                                         <WYSIWYGEditor
-                                            key={input.key}
-                                            id={input.key}
-                                            name={input.key}
-                                            placeholder={`Enter ${input.name}...`}
-                                            value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
-                                            }
-                                            onChange={(value: string) =>
-                                                handleChange(input.key, value)
-                                            }
-                                        />
+                                                    key={input.key}
+                                                    id={input.key}
+                                                    name={input.key}
+                                                    placeholder={`Enter ${input.name}...`}
+                                                    // value={
+                                                    //     (organization[
+                                                    //         input.key as keyof organizations
+                                                    //     ] as any) || ''
+                                                    // }
+                                                    onChange={(value: string) => handleChange(input.key, value)} value={''}                                        />
                                     ) : (
                                         <input
                                             id={input.key}
@@ -225,9 +213,7 @@ const ManagerAddewuser: React.FC = () => {
                                             type={input.type}
                                             placeholder={` ${input.name}`}
                                             value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
+                                                (organization[input.key as keyof Partial<Users>] || '')
                                             }
                                             onChange={(e) =>
                                                 handleChange(
@@ -267,4 +253,4 @@ const ManagerAddewuser: React.FC = () => {
         </AdminDashboardLayout>
     );
 };
-export default ManagerAddewuser;
+export default AdminAddewuser;

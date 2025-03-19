@@ -119,4 +119,35 @@ export enum EndPoints {
     login = "auth/login",
     register = "Auth/register",
 
+
+
+
+
+
+
+
+
+    createUser = "user/create",
+
+    updateUser = "user/update   ",
+    getAllUser = "user/getall",
+    getUserById = "user/get",
+    deleteUser = "user/delete",
+
+
+
+
+    getAllTask = "task/getall",
+    createTask = "task/create",
+    getTaskById = "task/get",
+    updateTask = "task/update",
+    deleteTask = "task/delete",
+
+
+
+
+
+
+
+
 }

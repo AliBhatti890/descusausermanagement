@@ -26,6 +26,8 @@ import ManagerUserList from "../Manager Dashboard/userList";
 import ManagerAddewuser from "../Admin Dashboard/addNewUser";
 import UserDashboard from "../User Dashboard/userDashboard";
 import UserAddNewTask from "../User Dashboard/addNewTask";
+import AdminAddNewTask from "../Admin Dashboard/addNewTask";
+import AdminAddewuser from "../Admin Dashboard/addNewUser";
 
 export const User: React.FC = () => {
   // @ts-ignore
@@ -65,7 +67,7 @@ export const User: React.FC = () => {
 
     {
       path: "/Admin/AddNewTask",
-      component: AddNewTask,
+      component: AdminAddNewTask,
       bars: false,
     },
 
@@ -77,7 +79,7 @@ export const User: React.FC = () => {
 
     {
       path: "/Admin/AddNewUser",
-      component: AddNewCandidate,
+      component: AdminAddewuser,
       bars: false,
     },
 
