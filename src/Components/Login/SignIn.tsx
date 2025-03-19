@@ -34,6 +34,9 @@ const SignIn: React.FC = () => {
             console.log(login, 'login');
 
             const Response: any = await axios.post(`${getUrl(API_URL)}${EndPoints.login}`, login);
+
+            navigate("/Admin/Dashboard")
+            return
             dispatch(
                 setCredentials({
                     user: Response.data.user,
