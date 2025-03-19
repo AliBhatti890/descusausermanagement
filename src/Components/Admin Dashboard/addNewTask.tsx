@@ -12,10 +12,10 @@ const AddNewTask: React.FC = () => {
     const [organization, setOrganization] = useState<organizations>({} as any);
 
     const status = [
-        { label: 'Pending', value: '01' },
-        { label: 'Contine', value: '02' },
-        { label: 'Drop', value: '03' },
-        { label: 'Complete', value: '04' },
+        { label: 'Pending', value: '1' },
+        { label: 'Contine', value: '2' },
+        { label: 'Drop', value: '3' },
+        { label: 'Complete', value: '4' },
         ];
     const organizationInputs = [
         { name: 'Task Subject', key: 'task_subject', type: 'text' },
