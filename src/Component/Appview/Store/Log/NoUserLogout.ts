@@ -10,7 +10,7 @@ const NoUserLogout = () => {
     const currentUser = reduxStore
         .getState()
         .auth
-        ?.token || ""
+        ?.user
     useEffect(() => {
 
         if (currentUser) return

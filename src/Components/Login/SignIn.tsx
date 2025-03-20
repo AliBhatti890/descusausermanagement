@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../Svg Icons/Logo.svg";
+import logo from "../../img/descusa-logo.png";
 import { Logins } from "../Types/Login";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -109,9 +109,9 @@ const SignIn: React.FC = () => {
               <div className="flex justify-center ">
                 <a
                   href="#"
-                  className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
+                  className="flex items-center  text-2xl font-semibold text-gray-900 dark:text-white"
                 >
-                  <img src={logo} className="w-72" alt="Logo" />
+                  <img src={logo} className="w-32" alt="Logo" />
                 </a>
               </div>
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">

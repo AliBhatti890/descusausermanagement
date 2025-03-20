@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, {  useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -10,11 +10,8 @@ import { Tasks } from '../Types/Task';
 
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
-    //@ts-ignore
     const [Organization, setOrganization] = useState<Tasks[]>([]);
-    //@ts-ignore
     const [loading, setLoading] = useState(true);
-   
    
     const input = [
         { name: 'Tak Subject', key: 'task_subject' },
@@ -24,6 +21,25 @@ const AdminDashboard: React.FC = () => {
         
     ];
 
+    useEffect(() => {
+        const fetchOrganization = async () => {
+            try {
+                const response = await axios.get(
+                    getUrl(API_URL) +
+                    EndPoints.getAllTask 
+                    
+                );
+                setOrganization(response.data.body.data);
+                console.log(response.data.body.data, 'response');
+            
+                // setTotalPages(response.data.pagination.totalItems ?? 10);
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+            }
+        };
+        fetchOrganization();
+    }, []);
 
     const handleDelete = async (id: string) => {
         const swalWithBootstrapButtons = Swal.mixin({

@@ -1,15 +1,5 @@
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
-
-import { Bars } from "../Bars/Bars/Bars";
-import Assignbudget from "../Signin/Assignbudget";
-import Budget from "../Signin/budget";
-import Consent from "../Signin/Consent";
-import CreatePosition from "../Signin/createposition";
-import Positioncreated from "../Signin/positioncreated";
-import Signin from "../Signin/Signin";
-import termandcondition from "../Signin/termandcondition";
-import Welcome from "../Signin/Welcome";
 import SignIn from "../Login/SignIn";
 import SignUp from "../Login/SignUp";
 import AdminDashboard from "../Admin Dashboard/adminDashboard";
@@ -22,22 +12,17 @@ import AdminAddNewTask from "../Admin Dashboard/addNewTask";
 import AdminAddewuser from "../Admin Dashboard/addNewUser";
 import ManagerAddNewuser from "../Manager Dashboard/addNewUser";
 import UserAddNewComponent from "../User Dashboard/addNewTask";
+import { Bars } from "../../Component/Appview/Bars/Bars/Bars";
 
 export const User: React.FC = () => {
   // @ts-ignore
   const [routes, setRoutes] = useState<any>([
     //SignIn Folder
-    { path: "/SigninHRMS", component: Signin, bars: false },
-    { path: "/CreatePosition", component: CreatePosition, bars: false },
-    { path: "/Assignbudget", component: Assignbudget, bars: false },
-    { path: "/Positioncreated", component: Positioncreated, bars: false },
-    { path: "/Consent", component: Consent, bars: false },
-    { path: "/Budget", component: Budget, bars: false },
-    { path: "/termandcondition", component: termandcondition, bars: false },
-    { path: "/Welcome", component: Welcome, bars: false },
-    { path: "/", component: SignIn, bars: false },
-    { path: "/SignUp", component: SignUp, bars: false },
-
+    {
+      path: "/",
+      component: SignIn,
+      bars: false,
+    },
     {
       path: "/Admin/Dashboard",
       component: AdminDashboard,

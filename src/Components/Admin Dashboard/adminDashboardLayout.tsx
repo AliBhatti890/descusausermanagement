@@ -1,6 +1,6 @@
 import React from 'react';
-import AdminSecondTobarBar from './adminSecondTobarBar';
 import AdminDasboardSideBar from './adminDasboardSideBar';
+import Topbar from '../Bars/Topbar/Topbar';
 
 type Props = {
     children?: React.ReactNode;
@@ -11,9 +11,9 @@ const AdminDashboardLayout: React.FC<Props> = ({ children }) => {
         <div className='bg-gray-200'>
            
                 <div className='px-16'>
-                    <AdminSecondTobarBar>
+                    <Topbar>
                         <AdminDasboardSideBar>{children}</AdminDasboardSideBar>
-                    </AdminSecondTobarBar>
+                    </Topbar>
                 </div>
         
         </div>

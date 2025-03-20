@@ -6,6 +6,8 @@ interface User {
     userCategory?: string;
     userName?: string;
     employeeId?: string;
+    name?: string;
+    user_type?: string;
 }
 
 

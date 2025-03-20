@@ -13,8 +13,6 @@ const ManagerDashboard: React.FC = () => {
     const [Organization, setOrganization] = useState<Tasks[]>([]);
     const [loading, setLoading] = useState(true);
    
-   
-
     const input = [
         { name: 'Tak Subject', key: 'task_subject' },
         { name: 'Tssk Detail', key: 'task_detail' },

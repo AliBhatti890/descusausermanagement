@@ -1,90 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import { clearCredentials } from '../../../Component/Appview/Store/ReduxToolkit/ReduxToolkit/AuthSlice/AuthSlice';
+import { persistor } from '../../../Component/Appview/Store/ReduxToolkit/ReduxToolkit/Store/Store';
+import NoUserLogout from '../../../Component/Appview/Store/Log/NoUserLogout';
+
+type Props = {
+  children?: React.ReactNode
+};
 
 
-// Type for Topbar props
-interface TopbarProps {
-    setHideBar: React.Dispatch<React.SetStateAction<boolean>>;
-    hideBar: boolean;
-}
+const Topbar: React.FC<Props> = ({ children }: any) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-export const Topbar: React.FC<TopbarProps> = ({ }) => {
- 
- 
+  const dispatch = useDispatch();
+  const user = useSelector((state: { auth: AuthState }) => state.auth.user);
 
-    useEffect(() => {
-        // Any other effects if needed
-    }, []);
 
-   
+  const handleLogout = () => {
+      Swal.fire({
+          title: 'Success!',
+          text: 'Log out successful!',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+      });
 
-    // @ts-ignore
-    const topIcons = [
-        { name: "User", icon: () => <EmployeeInfo /> },
-        { name: "Bell", icon: () => <div></div> },
-        { name: "Message", icon: () => <div></div> },
-        { name: "9SocialIcon", icon: () => <div></div> },
-    ];
+      dispatch(clearCredentials());
+      localStorage.clear();
+      sessionStorage.clear();
+      persistor.purge();
+      setTimeout(() => window.open('/', '_self'), 1000);
+  };
 
-    // const handleMessangerLogin = () => {
-    //     if (User?.employeeinfo[0]?.employeeid) {
-    //         window.open(`http://192.168.10.50:8080/${encodeURIComponent(JSON.stringify(User?.token))}`, '_blank');
-    //     }
-    // }
+  return (
 
-    // const handleSocialLogin = () => {
-    //     if (User?.employeeinfo[0]?.employeeid) {
-    //         window.open(`http://192.168.10.50:3001/Home/${User?.token}`, '_blank');
-    //     }
-    // }
-
-    return (
-            <div className="w-full items-center justify-center py-1">
-                <div className="flex-row flex items-center justify-between px-5 gap-5">
-                 <div className='w-[200px]'>LOGO</div>
-                 <div className=' w-full flex justify-between items-center'>
-                    <div>Dashboard</div>
-                    <div></div>
-                 </div>
+   <div className=''>
+      <NoUserLogout />
+    <div className="w-auto my-10">
+      <div className="flex items-center justify-between bg-white rounded-lg w-auto shadow-lg h-20 px-5">
+        <div className="w-full flex items-center gap-2">
+          <h1 className="text-2xl font-medium">{user?.user_type} Dashboard</h1>
+        </div>
+        
+        {/* Username with dropdown */}
+        <div className="relative">
+          <button
+            className="text-sm font-semibold 2xl:text-xl p-3 rounded-full text-white bg-[#1F7973] whitespace-nowrap"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            {user?.name}
+          </button>
+          
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-lg overflow-hidden">
+              <button
+                className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
             </div>
+          )}
         </div>
-    )
+      </div>
+    </div>
+    {children}
+   </div>
+
+
+  )
 }
 
-const EmployeeInfo: React.FC = () => {
+export default Topbar
 
-    // @ts-ignore
-    const [User, setUser] = useState<any>(JSON.parse(localStorage.getItem("User") || "{}"));
-    const navigate = useNavigate();
-    const [showOptions, setShowOptions] = useState<boolean>(false);
-
-    const handleLogout = () => { navigate('/'); localStorage.clear(); }
-    const handleMyProfile = () => { navigate(`/MyProfile/${User?.employeeinfo[0]?.employeeid}`) }
-    const handleMySetting = () => { navigate(`/Settings`) }
-
-    const userOptions = [
-        { name: "Logout", link: "/", method: handleLogout },
-        { name: "My Profile", link: "/", method: handleMyProfile },
-        { name: "Settings", link: "/", method: handleMySetting },
-    ];
-
-    return (
-        <div onClick={() => setShowOptions(!showOptions)} className=" flex items-center gap-2 px-1 cursor-pointer ">
-            {/* <div className="text-sm font-semibold 2xl:text-xl">{User?.employeeinfo[0]?.name}</div> */}
-            {false ? (
-                <img className="h-10 w-10 2xl:w-[60px] 2xl:h-[50px] object-cover rounded-full" src={User.employeeinfo[0].image} alt="User Avatar" />
-            ) : (
-                <div className="h-8 w-8 2xl:w-[60px] 2xl:h-[50px] object-cover rounded-full ">
-                    User Image
-                </div>
-            )}
-            {showOptions &&  (
-                <div className="absolute top-[40px] 2xl:top-[60px] right-1 z-50 bg-white flex flex-col gap-1 text-sm py-1 rounded-lg border shadow-xl">
-                    {userOptions.map(u => (
-                        <div key={u.name} onClick={u.method} className="hover:bg-gray-200 whitespace-nowrap px-10 2xl:text-xl">{u.name}</div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}

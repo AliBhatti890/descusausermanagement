@@ -1,6 +1,6 @@
 import React from 'react';
-import UserSecondTobarBar from './userSecondTobarBar';
 import UserDasboardSideBar from './userDasboardSideBar';
+import Topbar from '../Bars/Topbar/Topbar';
 
 type Props = {
     children?: React.ReactNode;
@@ -11,9 +11,9 @@ const UserDashboardLayout: React.FC<Props> = ({ children }) => {
         <div className='bg-gray-200'>
             
                 <div className='px-16'>
-                    <UserSecondTobarBar>
+                    <Topbar>
                         <UserDasboardSideBar>{children}</UserDasboardSideBar>
-                    </UserSecondTobarBar>
+                    </Topbar>
                 </div>
         </div>
     );
