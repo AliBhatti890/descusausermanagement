@@ -4,26 +4,23 @@ import { FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
-import TablePagination from '../Child Component/TablePagination';
 import Loader from '../Loader/Loader';
-import { organizations } from '../Types/Organization';
 import ManagerDashboardLayout from './managerDashboardLayout';
+import { Tasks } from '../Types/Task';
 
 const ManagerDashboard: React.FC = () => {
     const navigate = useNavigate();
-    const [Organization, setOrganization] = useState<organizations[]>([]);
+    const [Organization, setOrganization] = useState<Tasks[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(10);
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
+   
+   
 
     const input = [
-        { name: 'Sr.', key: 'srNo' },
-        { name: 'Organization Name', key: 'organizationName' },
-        { name: 'No. of Employee', key: 'employeeCount' },
+        { name: 'Tak Subject', key: 'task_subject' },
+        { name: 'Tssk Detail', key: 'task_detail' },
+        { name: 'Assignee To', key: 'assignee_to' },
+        { name: 'Status', key: 'status' },
+        
     ];
 
     useEffect(() => {
@@ -31,18 +28,20 @@ const ManagerDashboard: React.FC = () => {
             try {
                 const response = await axios.get(
                     getUrl(API_URL) +
-                    EndPoints.getAllOrganizations +
-                    `?page=${currentPage}&pageSize=${10}`
+                    EndPoints.getAllTask 
+                    
                 );
-                setOrganization(response.data.data);
-                setTotalPages(response.data.pagination.totalItems ?? 10);
+                setOrganization(response.data.body.data);
+                console.log(response.data.body.data, 'response');
+            
+                // setTotalPages(response.data.pagination.totalItems ?? 10);
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
             }
         };
         fetchOrganization();
-    }, [currentPage, totalPages]);
+    }, []);
 
     const handleDelete = async (id: string) => {
         const swalWithBootstrapButtons = Swal.mixin({
@@ -67,10 +66,7 @@ const ManagerDashboard: React.FC = () => {
             .then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        await axios.delete(
-                            `${getUrl(API_URL)}${EndPoints.deleteOrganization
-                            }/${id}`
-                        );
+   await axios.delete(`${getUrl(API_URL)}${EndPoints.deleteTask}/?_id=${id}`);
                         swalWithBootstrapButtons
                             .fire({
                                 title: 'Deleted!',
@@ -95,7 +91,7 @@ const ManagerDashboard: React.FC = () => {
                     });
                 }
             });
-    };
+    };    
     if (loading)
         return (
             <div>
@@ -104,102 +100,98 @@ const ManagerDashboard: React.FC = () => {
         );
     return (
         <ManagerDashboardLayout>
-            <div className='border rounded-lg shadow-inner  space-y-5  p-8 relative bg-white '>
-                <div className='flex justify-between items-start w-full'>
-                    <div className='text-xl font-bold'>Task List</div>
-                    <div>
-                        {/* <button type="button" className='bg-[#1F7973] text-white rounded-lg px-10 pt-2  pb-3' onClick={handleForgetPasswordClick}> */}
-                        <button
-                            type='button'
-                            className='bg-[#1F7973] text-white rounded-lg px-10 pt-2  pb-3'
-                            onClick={() =>
-                                navigate(
-                                    '/Manager/AddNewTask?mode=Add'
-                                )
-                            }
-                        >
-                            + Add New
-                        </button>
-                    </div>
-                </div>
-                <div className=''>
-                    <table className=' w-full   border-2  '>
-                        <thead>
-                            <tr className='rounded-t-xl bg-[#1F7973]  text-[#FFFFFF]'>
-                                {input.map((item) => (
-                                    <th className='border-b border-gray-400 px-4 py-2 text-start'>
-                                        {item.name}
-                                    </th>
-                                ))}
-                                <th className='border-b border-gray-400 px-4 py-2 '>
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Organization.map((Organization: any) => (
-                                <tr
-                                    key={Organization.id}
-                                    className='border-b border-gray-400'
-                                >
-                                    {input.map((item) => (
-                                        <td
-                                            key={item.key}
-                                            className='px-4 py-2'
-                                        >
-                                            {Organization[item.key] as string}
-                                        </td>
-                                    ))}
-                                    <td className=' border-gray-400  py-2  flex justify-center items-center gap-3'>
-                                        <div className='bg-[#1F7973] rounded-lg px-2 py-2   flex  justify-center  items-center cursor-pointer'>
-                                            <FaEye
-                                                color='white'
-                                                size={20}
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/Manager/AddNewTask/?id=${Organization.id}&mode=View`
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        <div>
-                                            <button
-                                                type='button'
-                                                className='bg-[#F3632D] text-white rounded-lg px-8 pt-1  pb-2 '
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/Manager/AddNewTask/?id=${Organization.id}&mode=Edit`
-                                                    )
-                                                }
-                                            >
-                                                Edit
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <button
-                                                type='button'
-                                                className='bg-[#E14640] text-white rounded-lg px-8 pt-1  pb-2 '
-                                                onClick={() =>
-                                                    handleDelete(
-                                                        Organization.id
-                                                    )
-                                                }
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                <TablePagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
-            </div>
+             <div className='border rounded-lg shadow-inner  space-y-5  p-8 relative bg-white '>
+                          <div className='flex justify-between items-start w-full'>
+                              <div className='text-xl font-bold'>Task List</div>
+                              <div>
+                                  {/* <button type="button" className='bg-[#1F7973] text-white rounded-lg px-10 pt-2  pb-3' onClick={handleForgetPasswordClick}> */}
+                                  <button
+                                      type='button'
+                                      className='bg-[#1F7973] text-white rounded-lg px-10 pt-2  pb-3'
+                                      onClick={() =>
+                                          navigate(
+                                              '/Manager/AddNewTask?mode=Add'
+                                          )
+                                      }
+                                  >
+                                      + Add New
+                                  </button>
+                              </div>
+                          </div>
+                          <div className=''>
+                              <table className=' w-full   border-2  '>
+                                  <thead>
+                                      <tr className='rounded-t-xl bg-[#1F7973]  text-[#FFFFFF]'>
+                                          {input.map((item) => (
+                                              <th className='border-b border-gray-400 px-4 py-2 text-start'>
+                                                  {item.name}
+                                              </th>
+                                          ))}
+                                          <th className='border-b border-gray-400 px-4 py-2 '>
+                                              Action
+                                          </th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      {Organization.map((Organization: any) => (
+                                          <tr
+                                              key={Organization._id}
+                                              className='border-b border-gray-400'
+                                          >
+                                              {input.map((item) => (
+                                                  <td
+                                                      key={item.key}
+                                                      className='px-4 py-2'
+                                                  >
+                                                      {Organization[item.key] as string}
+                                                  </td>
+                                              ))}
+                                              <td className=' border-gray-400  py-2  flex justify-center items-center gap-3'>
+                                                  <div className='bg-[#1F7973] rounded-lg px-2 py-2   flex  justify-center  items-center cursor-pointer'>
+                                                      <FaEye
+                                                          color='white'
+                                                          size={20}
+                                                          onClick={() =>
+                                                              navigate(
+                                                                  `/Manager/AddNewTask/?id=${Organization._id}&mode=View`
+                                                              )
+                                                          }
+                                                      />
+                                                  </div>
+                                                  <div>
+                                                      <button
+                                                          type='button'
+                                                          className='bg-[#F3632D] text-white rounded-lg px-8 pt-1  pb-2 '
+                                                          onClick={() =>
+                                                              navigate(
+                                                                  `/Manager/AddNewTask/?id=${Organization._id}&mode=Edit`
+                                                              )
+                                                          }
+                                                      >
+                                                          Edit
+                                                      </button>
+                                                  </div>
+                                                  <div>
+                                                      <button
+                                                          type='button'
+                                                          className='bg-[#E14640] text-white rounded-lg px-8 pt-1  pb-2 '
+                                                          onClick={() =>
+                                                              handleDelete(
+                                                                  Organization._id
+                                                              )
+                                                          }
+                                                      >
+                                                          Delete
+                                                      </button>
+                                                  </div>
+                                              </td>
+                                          </tr>
+                                      ))}
+                                  </tbody>
+                              </table>
+                          </div>
+                         
+                      </div>
         </ManagerDashboardLayout>
     );
 };

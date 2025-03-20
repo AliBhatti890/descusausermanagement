@@ -4,29 +4,21 @@ import { FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
-import TablePagination from '../Child Component/TablePagination';
 import Loader from '../Loader/Loader';
-import { organizations } from '../Types/Organization';
+import { Users } from '../Types/Users';
 import ManagerDashboardLayout from './managerDashboardLayout';
 
 const ManagerUserList: React.FC = () => {
     const navigate = useNavigate();
-    const [Organization, setOrganization] = useState<organizations[]>([]);
+    const [Organization, setOrganization] = useState<Users[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(10);
 
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
+    
 
     const input = [
-        { name: 'Sr.', key: 'srNo' },
-        { name: 'Full Name', key: 'organizationName' },
-        { name: 'Department', key: 'employeeCount' },
-    
-
-    
+        { name: 'Sr.', key: '_id' },
+        { name: 'User Name', key: 'first_name' },
+        { name: 'Contact', key: 'contact' },
     ];
 
     useEffect(() => {
@@ -34,18 +26,20 @@ const ManagerUserList: React.FC = () => {
             try {
                 const response = await axios.get(
                     getUrl(API_URL) +
-                    EndPoints.getAllOrganizations +
-                    `?page=${currentPage}&pageSize=${10}`
+                    EndPoints.getAllUser 
+                    
                 );
-                setOrganization(response.data.data);
-                setTotalPages(response.data.pagination.totalItems ?? 10);
+                setOrganization(response.data.body.data);
+                console.log(response.data.body.data, 'response');
+            
+                // setTotalPages(response.data.pagination.totalItems ?? 10);
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
             }
         };
         fetchOrganization();
-    }, [currentPage, totalPages]);
+    }, []);
 
     const handleDelete = async (id: string) => {
         const swalWithBootstrapButtons = Swal.mixin({
@@ -70,10 +64,7 @@ const ManagerUserList: React.FC = () => {
             .then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        await axios.delete(
-                            `${getUrl(API_URL)}${EndPoints.deleteOrganization
-                            }/${id}`
-                        );
+                        await axios.delete(`${getUrl(API_URL)}${EndPoints.deleteUser}/?_id=${id}`);
                         swalWithBootstrapButtons
                             .fire({
                                 title: 'Deleted!',
@@ -99,6 +90,10 @@ const ManagerUserList: React.FC = () => {
                 }
             });
     };
+
+
+    console.log(Organization, 'Organization');
+    
     if (loading)
         return (
             <div>
@@ -142,13 +137,19 @@ const ManagerUserList: React.FC = () => {
                         <tbody>
                             {Organization.map((Organization: any) => (
                                 <tr
-                                    key={Organization.id}
+                                    key={Organization._id}
+
+                                
                                     className='border-b border-gray-400'
+                                    
+                                    
                                 >
                                     {input.map((item) => (
                                         <td
                                             key={item.key}
                                             className='px-4 py-2'
+                                            onClick={() =>  console.log(Organization._id, 'Organization') }
+                                            
                                         >
                                             {Organization[item.key] as string}
                                         </td>
@@ -160,7 +161,7 @@ const ManagerUserList: React.FC = () => {
                                                 size={20}
                                                 onClick={() =>
                                                     navigate(
-                                                        `/Manager/AddNewUser/?id=${Organization.id}&mode=View`
+                                                        `/Manager/AddNewUser/?id=${Organization._id}&mode=View`
                                                     )
                                                 }
                                             />
@@ -171,7 +172,9 @@ const ManagerUserList: React.FC = () => {
                                                 className='bg-[#F3632D] text-white rounded-lg px-8 pt-1  pb-2 '
                                                 onClick={() =>
                                                     navigate(
-                                                        `/Manager/AddNewUser/?id=${Organization.id}&mode=Edit`
+                                                        `/Manager/AddNewUser/?id=${Organization._id}&mode=Edit`
+                                                  
+                                                     
                                                     )
                                                 }
                                             >
@@ -184,7 +187,7 @@ const ManagerUserList: React.FC = () => {
                                                 className='bg-[#E14640] text-white rounded-lg px-8 pt-1  pb-2 '
                                                 onClick={() =>
                                                     handleDelete(
-                                                        Organization.id
+                                                        Organization._id
                                                     )
                                                 }
                                             >
@@ -197,11 +200,7 @@ const ManagerUserList: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-                <TablePagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
+               
             </div>
         </ManagerDashboardLayout>
     );

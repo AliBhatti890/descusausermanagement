@@ -1,27 +1,21 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
-import TablePagination from '../Child Component/TablePagination';
 import Loader from '../Loader/Loader';
-import { organizations } from '../Types/Organization';
 import AdminDashboardLayout from './adminDashboardLayout';
-import { Users } from '../Types/Users';
 import { Tasks } from '../Types/Task';
 
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
+    //@ts-ignore
     const [Organization, setOrganization] = useState<Tasks[]>([]);
+    //@ts-ignore
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(10);
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
-
+   
+   
     const input = [
         { name: 'Tak Subject', key: 'task_subject' },
         { name: 'Tssk Detail', key: 'task_detail' },
@@ -30,25 +24,6 @@ const AdminDashboard: React.FC = () => {
         
     ];
 
-    useEffect(() => {
-        const fetchOrganization = async () => {
-            try {
-                const response = await axios.get(
-                    getUrl(API_URL) +
-                    EndPoints.getAllTask 
-                    
-                );
-                setOrganization(response.data.body.data);
-                console.log(response.data.body.data, 'response');
-            
-                // setTotalPages(response.data.pagination.totalItems ?? 10);
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-            }
-        };
-        fetchOrganization();
-    }, [currentPage, totalPages]);
 
     const handleDelete = async (id: string) => {
         const swalWithBootstrapButtons = Swal.mixin({
@@ -98,11 +73,7 @@ const AdminDashboard: React.FC = () => {
                     });
                 }
             });
-    };
-
-
-    console.log(Organization, 'Organization');
-    
+    };    
     if (loading)
         return (
             <div>

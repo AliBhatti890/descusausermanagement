@@ -1,10 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
-import { organizations } from '../Types/Organization';
 import WYSIWYGEditor from '../Child Component/Editor';
 import AdminDashboardLayout from './adminDashboardLayout';
 import { Users } from '../Types/Users';
@@ -15,9 +13,9 @@ const AdminAddewuser: React.FC = () => {
     const [organization, setOrganization] = useState<Partial<Users>>({});
 
     const usertType = [
-        { label: 'Admin', value: '01' },
-        { label: 'Manager', value: '02' },
-        { label: 'User', value: '03' },
+        { label: 'Admin', value: 'Admin' },
+        { label: 'Manager', value: 'Manager' },
+        { label: 'User', value: 'User' },
        
     ];
     const organizationInputs = [
@@ -40,7 +38,7 @@ const AdminAddewuser: React.FC = () => {
     const searchParams = new URLSearchParams(location.search);
     const id = searchParams.get('id');
     const mode = searchParams.get('mode');
-    const user = useSelector((state: { auth: AuthState }) => state.auth.user);
+
 
     useEffect(() => {
         console.log(id, 'id');

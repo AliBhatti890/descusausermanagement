@@ -4,44 +4,32 @@ import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
-import { organizations } from '../Types/Organization';
 import WYSIWYGEditor from '../Child Component/Editor';
 import ManagerDashboardLayout from './managerDashboardLayout';
+import { Users } from '../Types/Users';
 
 const ManagerAddNewuser: React.FC = () => {
-    const [organization, setOrganization] = useState<organizations>({} as any);
+    const [organization, setOrganization] = useState<Partial<Users>>({});
 
-    const months = [
-        { label: 'January', value: '01' },
-        { label: 'February', value: '02' },
-        { label: 'March', value: '03' },
-        { label: 'April', value: '04' },
-        { label: 'May', value: '05' },
-        { label: 'June', value: '06' },
-        { label: 'July', value: '07' },
-        { label: 'August', value: '08' },
-        { label: 'September', value: '09' },
-        { label: 'October', value: '10' },
-        { label: 'November', value: '11' },
-        { label: 'December', value: '12' }
+    const usertType = [
+        { label: 'Admin', value: 'Admin' },
+        { label: 'Manager', value: 'Manager' },
+        { label: 'User', value: 'User' },
+       
     ];
     const organizationInputs = [
-        { name: 'Organization Name', key: 'organizationName', type: 'text' },
-        { name: 'Nature of Work', key: 'natureOfWork', type: 'text' },
+        { name: 'Full Name', key: 'first_name', type: 'text' },
+        { name: 'Department', key: 'department', type: 'text' },
+        { name: 'contact', key: 'contact', type: 'text' },
+        { name: 'email', key: 'email', type: 'text' },
+        { name: 'password', key: 'password', type: 'text' },   
         {
-            name: 'Fiscal Month Start',
-            key: 'fiscalYearStart',
+            name: 'User Type',
+            key: 'user_type',
             type: 'dropdown',
-            options: months
+            options: usertType
         },
-        {
-            name: 'Fiscal Month End',
-            key: 'fiscalYearEnd',
-            type: 'dropdown',
-            options: months
-        },
-        { name: 'General Policy', key: 'generalPolicy', type: 'textarea' },
-        { name: 'IsActive', key: 'isActive', type: 'checkbox' }
+    
     ];
 
     const navigate = useNavigate();
@@ -49,23 +37,35 @@ const ManagerAddNewuser: React.FC = () => {
     const searchParams = new URLSearchParams(location.search);
     const id = searchParams.get('id');
     const mode = searchParams.get('mode');
+    //@ts-ignore
     const user = useSelector((state: { auth: AuthState }) => state.auth.user);
 
     useEffect(() => {
+        console.log(id, 'id');
+        console.log(mode, 'id');
+        
         const fetchPositions = async () => {
+      
+console.log(id, 'id');
+
+
             if (id === null) return;
+            
             try {
                 const response = await axios.get(
-                    `${getUrl(API_URL)}${EndPoints.getOrganizationById}/${id}`
+                    `${getUrl(API_URL)}${EndPoints.getUserById}?_id=${id}`
                 );
+                console.log(response.data.data, 'response');
+                
                 response.data &&
                     setOrganization({
-                        organizationName: response.data.organizationName,
-                        natureOfWork: response.data.natureOfWork,
-                        fiscalYearStart: response.data.fiscalYearStart,
-                        fiscalYearEnd: response.data.fiscalYearEnd,
-                        generalPolicy: response.data.generalPolicy,
-                        isActive: response.data.isActive
+                        first_name: response.data.data.first_name,
+                        department: response.data.data.department,
+                        contact: response.data.data.contact,
+                        email: response.data.data.email,
+               password: response.data.data.password,
+                        user_type: response.data.data.user_type,
+
                     } as any);
             } catch (err) {}
         };
@@ -80,9 +80,7 @@ const ManagerAddNewuser: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (organization.organizationName.length > 20) {
-            return alert('Organization Name should be less than 20 characters');
-        }
+      
         try {
             Swal.fire({
                 title: 'Logging...',
@@ -93,28 +91,32 @@ const ManagerAddNewuser: React.FC = () => {
                 }
             });
             if (mode === 'Edit') {
-                organization.id = id || 'null';
-                organization.updatedBy = user?.userName as any;
-                await axios.put(
-                    `${getUrl(API_URL)}${EndPoints.updateOrganization}`,
+                organization._id = id || 'null';
+              const response =   await axios.put(
+                    `${getUrl(API_URL)}${EndPoints.updateUser}`,
                     organization
                 );
+
+                console.log(response, 'response');
+              
+                
             } else {
-                organization.createdBy = user?.userName as any;
+              
                 await axios.post(
-                    `${getUrl(API_URL)}${EndPoints.createOrganization}`,
+                    `${getUrl(API_URL)}${EndPoints.createUser}`,
                     organization
                 );
             }
+
             Swal.fire({
-                title: 'Organization saved successfully',
+                title: 'User saved successfully',
                 icon: 'success',
                 showDenyButton: false,
                 showCancelButton: false,
                 confirmButtonText: 'Ok'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    navigate('/Organizations');
+                    navigate('/Manager/UserList');
                 }
             });
         } catch (error: any) {
@@ -131,14 +133,16 @@ const ManagerAddNewuser: React.FC = () => {
         }
     };
 
+
+
     return (
         <ManagerDashboardLayout>
-            <div className=' border rounded-lg shadow-inner h-dvh  p-8 relative bg-white'>
+              <div className=' border rounded-lg shadow-inner h-dvh  p-8 relative bg-white'>
                 <div className='grid grid-cols-2 w-full '>
                     <div className='grid gap-3'>
                         <div className='flex justify-between  w-full '>
                             <h2 className='text-lg font-bricolage font-bold'>
-                                {mode} Task
+                                {mode} User
                             </h2>
                         </div>
                         <form onSubmit={handleSubmit} className='grid gap-3'>
@@ -160,11 +164,11 @@ const ManagerAddNewuser: React.FC = () => {
                                         <select
                                             id={input.key}
                                             name={input.key}
-                                            value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
-                                            }
+                                            // value={
+                                            //     (organization[
+                                            //         input.key as keyof organizations
+                                            //     ] as any) || ''
+                                            // }
                                             onChange={(e) => {
                                                 handleChange(
                                                     input.key,
@@ -179,7 +183,7 @@ const ManagerAddNewuser: React.FC = () => {
                                             disabled={mode === 'View'}
                                         >
                                             <option value='' disabled>
-                                                Select Month
+                                                Select Usert Type
                                             </option>
                                             {input.options?.map((option) => (
                                                 <option
@@ -190,46 +194,18 @@ const ManagerAddNewuser: React.FC = () => {
                                                 </option>
                                             ))}
                                         </select>
-                                    ) : input.type === 'checkbox' ? (
-                                        <input
-                                            id={input.key}
-                                            name={input.key}
-                                            type={input.type}
-                                            checked={
-                                                organization[
-                                                    input.key as keyof organizations
-                                                ] === 'Y'
-                                                    ? true
-                                                    : false
-                                            }
-                                            onChange={(e) => {
-                                                handleChange(
-                                                    input.key,
-                                                    e.target.checked ? 'Y' : 'N'
-                                                );
-                                            }}
-                                            className={`border border-gray-300 p-2 rounded-lg h-10 w-6 text-[15px] text-[#7D7D7D] ${
-                                                mode === 'View'
-                                                    ? 'cursor-not-allowed bg-gray-100'
-                                                    : ''
-                                            }`}
-                                            readOnly={mode === 'View'}
-                                        />
                                     ) : input.type === 'textarea' ? (
                                         <WYSIWYGEditor
-                                            key={input.key}
-                                            id={input.key}
-                                            name={input.key}
-                                            placeholder={`Enter ${input.name}...`}
-                                            value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
-                                            }
-                                            onChange={(value: string) =>
-                                                handleChange(input.key, value)
-                                            }
-                                        />
+                                                    key={input.key}
+                                                    id={input.key}
+                                                    name={input.key}
+                                                    placeholder={`Enter ${input.name}...`}
+                                                    // value={
+                                                    //     (organization[
+                                                    //         input.key as keyof organizations
+                                                    //     ] as any) || ''
+                                                    // }
+                                                    onChange={(value: string) => handleChange(input.key, value)} value={''}                                        />
                                     ) : (
                                         <input
                                             id={input.key}
@@ -237,9 +213,7 @@ const ManagerAddNewuser: React.FC = () => {
                                             type={input.type}
                                             placeholder={` ${input.name}`}
                                             value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
+                                                (organization[input.key as keyof Partial<Users>] || '')
                                             }
                                             onChange={(e) =>
                                                 handleChange(

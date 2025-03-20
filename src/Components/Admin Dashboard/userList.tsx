@@ -4,9 +4,7 @@ import { FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
-import TablePagination from '../Child Component/TablePagination';
 import Loader from '../Loader/Loader';
-import { organizations } from '../Types/Organization';
 import AdminDashboardLayout from './adminDashboardLayout';
 import { Users } from '../Types/Users';
 
@@ -14,13 +12,7 @@ const AdminUserList: React.FC = () => {
     const navigate = useNavigate();
     const [Organization, setOrganization] = useState<Users[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(10);
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
-
+   
     const input = [
         { name: 'Sr.', key: '_id' },
         { name: 'User Name', key: 'first_name' },
@@ -45,7 +37,7 @@ const AdminUserList: React.FC = () => {
             }
         };
         fetchOrganization();
-    }, [currentPage, totalPages]);
+    }, []);
 
     const handleDelete = async (id: string) => {
         const swalWithBootstrapButtons = Swal.mixin({

@@ -142,6 +142,7 @@ export enum EndPoints {
     getTaskById = "task/get",
     updateTask = "task/update",
     deleteTask = "task/delete",
+    authenticate = "auth/login", 
 
 
 

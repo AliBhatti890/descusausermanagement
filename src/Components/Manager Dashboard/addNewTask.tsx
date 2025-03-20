@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_URL, EndPoints, getUrl } from '../../helpers/constants';
@@ -9,63 +8,52 @@ import WYSIWYGEditor from '../Child Component/Editor';
 import ManagerDashboardLayout from './managerDashboardLayout';
 
 const ManagerAddNewTask: React.FC = () => {
-    const [organization, setOrganization] = useState<organizations>({} as any);
-
-    const months = [
-        { label: 'January', value: '01' },
-        { label: 'February', value: '02' },
-        { label: 'March', value: '03' },
-        { label: 'April', value: '04' },
-        { label: 'May', value: '05' },
-        { label: 'June', value: '06' },
-        { label: 'July', value: '07' },
-        { label: 'August', value: '08' },
-        { label: 'September', value: '09' },
-        { label: 'October', value: '10' },
-        { label: 'November', value: '11' },
-        { label: 'December', value: '12' }
-    ];
+    const [organization, setOrganization] = useState<Record<string, any>>({});
+    const status = [
+        { label: 'Pending', value: '1' },
+        { label: 'Contine', value: '2' },
+        { label: 'Drop', value: '3' },
+        { label: 'Complete', value: '4' },
+        ];
     const organizationInputs = [
-        { name: 'Organization Name', key: 'organizationName', type: 'text' },
-        { name: 'Nature of Work', key: 'natureOfWork', type: 'text' },
+        { name: 'Task Subject', key: 'task_subject', type: 'text' },
+        { name: 'Task Detail', key: 'task_detail', type: 'textarea' },
         {
-            name: 'Fiscal Month Start',
-            key: 'fiscalYearStart',
+            name: 'Assginee To',
+            key: 'assignee_to',
             type: 'dropdown',
-            options: months
+            options: status
         },
         {
-            name: 'Fiscal Month End',
-            key: 'fiscalYearEnd',
+            name: 'Status',
+            key: 'status',
             type: 'dropdown',
-            options: months
+            options: status
         },
-        { name: 'General Policy', key: 'generalPolicy', type: 'textarea' },
-        { name: 'IsActive', key: 'isActive', type: 'checkbox' }
+       
     ];
-
     const navigate = useNavigate();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const id = searchParams.get('id');
     const mode = searchParams.get('mode');
-    const user = useSelector((state: { auth: AuthState }) => state.auth.user);
 
     useEffect(() => {
         const fetchPositions = async () => {
             if (id === null) return;
             try {
-                const response = await axios.get(
-                    `${getUrl(API_URL)}${EndPoints.getOrganizationById}/${id}`
+                 const response = await axios.get(
+                    `${getUrl(API_URL)}${EndPoints.getTaskById}?_id=${id}`
                 );
+                console.log(response.data.data, 'response');
+                
                 response.data &&
                     setOrganization({
-                        organizationName: response.data.organizationName,
-                        natureOfWork: response.data.natureOfWork,
-                        fiscalYearStart: response.data.fiscalYearStart,
-                        fiscalYearEnd: response.data.fiscalYearEnd,
-                        generalPolicy: response.data.generalPolicy,
-                        isActive: response.data.isActive
+                        task_subject: response.data.data.task_subject,
+                        task_detail: response.data.data.task_detail,
+                        assignee_to: response.data.data.assignee_to,
+                        status: response.data.data.status
+
                     } as any);
             } catch (err) {}
         };
@@ -80,9 +68,7 @@ const ManagerAddNewTask: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (organization.organizationName.length > 20) {
-            return alert('Organization Name should be less than 20 characters');
-        }
+      
         try {
             Swal.fire({
                 title: 'Logging...',
@@ -93,28 +79,30 @@ const ManagerAddNewTask: React.FC = () => {
                 }
             });
             if (mode === 'Edit') {
-                organization.id = id || 'null';
-                organization.updatedBy = user?.userName as any;
+                organization._id = id || 'null';
                 await axios.put(
-                    `${getUrl(API_URL)}${EndPoints.updateOrganization}`,
+                    `${getUrl(API_URL)}${EndPoints.updateTask}`,
                     organization
                 );
             } else {
-                organization.createdBy = user?.userName as any;
-                await axios.post(
-                    `${getUrl(API_URL)}${EndPoints.createOrganization}`,
+                console.log(organization, 'organization');
+                
+            const response=    await axios.post(
+                    `${getUrl(API_URL)}${EndPoints.createTask}`,
                     organization
                 );
+                console.log(response.data, 'response');
+                return
             }
             Swal.fire({
-                title: 'Organization saved successfully',
+                title: 'Task created',
                 icon: 'success',
                 showDenyButton: false,
                 showCancelButton: false,
                 confirmButtonText: 'Ok'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    navigate('/Organizations');
+                    navigate('/Manager/Dashboard');
                 }
             });
         } catch (error: any) {
@@ -133,7 +121,7 @@ const ManagerAddNewTask: React.FC = () => {
 
     return (
         <ManagerDashboardLayout>
-            <div className=' border rounded-lg shadow-inner h-dvh  p-8 relative bg-white'>
+              <div className=' border rounded-lg shadow-inner h-dvh  p-8 relative bg-white'>
                 <div className='grid grid-cols-2 w-full '>
                     <div className='grid gap-3'>
                         <div className='flex justify-between  w-full '>
@@ -179,7 +167,7 @@ const ManagerAddNewTask: React.FC = () => {
                                             disabled={mode === 'View'}
                                         >
                                             <option value='' disabled>
-                                                Select Month
+                                                Select Status
                                             </option>
                                             {input.options?.map((option) => (
                                                 <option
@@ -190,46 +178,19 @@ const ManagerAddNewTask: React.FC = () => {
                                                 </option>
                                             ))}
                                         </select>
-                                    ) : input.type === 'checkbox' ? (
-                                        <input
-                                            id={input.key}
-                                            name={input.key}
-                                            type={input.type}
-                                            checked={
-                                                organization[
-                                                    input.key as keyof organizations
-                                                ] === 'Y'
-                                                    ? true
-                                                    : false
-                                            }
-                                            onChange={(e) => {
-                                                handleChange(
-                                                    input.key,
-                                                    e.target.checked ? 'Y' : 'N'
-                                                );
-                                            }}
-                                            className={`border border-gray-300 p-2 rounded-lg h-10 w-6 text-[15px] text-[#7D7D7D] ${
-                                                mode === 'View'
-                                                    ? 'cursor-not-allowed bg-gray-100'
-                                                    : ''
-                                            }`}
-                                            readOnly={mode === 'View'}
-                                        />
-                                    ) : input.type === 'textarea' ? (
+                                    ) :  input.type === 'textarea' ? (
                                         <WYSIWYGEditor
-                                            key={input.key}
-                                            id={input.key}
-                                            name={input.key}
-                                            placeholder={`Enter ${input.name}...`}
-                                            value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
-                                            }
-                                            onChange={(value: string) =>
-                                                handleChange(input.key, value)
-                                            }
-                                        />
+                                                key={input.key}
+                                                id={input.key}
+                                                name={input.key}
+                                                placeholder={`Enter ${input.name}...`}
+                                                value={
+                                                    (organization[
+                                                        input.key as keyof organizations
+                                                    ] as any) || ''
+                                                }
+                                                onChange={(value: string) => handleChange(input.key, value)}
+                                                                          />
                                     ) : (
                                         <input
                                             id={input.key}
@@ -237,9 +198,7 @@ const ManagerAddNewTask: React.FC = () => {
                                             type={input.type}
                                             placeholder={` ${input.name}`}
                                             value={
-                                                (organization[
-                                                    input.key as keyof organizations
-                                                ] as any) || ''
+                                                organization[input.key] || ''
                                             }
                                             onChange={(e) =>
                                                 handleChange(

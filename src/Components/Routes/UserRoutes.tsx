@@ -10,24 +10,18 @@ import Positioncreated from "../Signin/positioncreated";
 import Signin from "../Signin/Signin";
 import termandcondition from "../Signin/termandcondition";
 import Welcome from "../Signin/Welcome";
-import Team from "../Signup/createteam";
-import organizationDetails from "../Signup/organizationDetails";
-import organizationSetup from "../Signup/organizationSetup";
-import Signup from "../Signup/signup";
 import SignIn from "../Login/SignIn";
 import SignUp from "../Login/SignUp";
 import AdminDashboard from "../Admin Dashboard/adminDashboard";
-import AddNewTask from "../Admin Dashboard/addNewTask";
 import AdminUserList from "../Admin Dashboard/userList";
-import AddNewCandidate from "../Admin Dashboard/addNewUser";
 import ManagerDashboard from "../Manager Dashboard/managerDashboard";
 import ManagerAddNewTask from "../Manager Dashboard/addNewTask";
 import ManagerUserList from "../Manager Dashboard/userList";
-import ManagerAddewuser from "../Admin Dashboard/addNewUser";
 import UserDashboard from "../User Dashboard/userDashboard";
-import UserAddNewTask from "../User Dashboard/addNewTask";
 import AdminAddNewTask from "../Admin Dashboard/addNewTask";
 import AdminAddewuser from "../Admin Dashboard/addNewUser";
+import ManagerAddNewuser from "../Manager Dashboard/addNewUser";
+import UserAddNewComponent from "../User Dashboard/addNewTask";
 
 export const User: React.FC = () => {
   // @ts-ignore
@@ -41,21 +35,6 @@ export const User: React.FC = () => {
     { path: "/Budget", component: Budget, bars: false },
     { path: "/termandcondition", component: termandcondition, bars: false },
     { path: "/Welcome", component: Welcome, bars: false },
-
-    //SignUp Folder
-    { path: "/Team", component: Team, bars: false },
-    {
-      path: "/OrganizationDetails",
-      component: organizationDetails,
-      bars: false,
-    },
-    {
-      path: "/OrganizationSetup",
-      component: organizationSetup,
-      bars: false,
-    },
-    { path: "/SignUpHRMS", component: Signup, bars: false },
-
     { path: "/", component: SignIn, bars: false },
     { path: "/SignUp", component: SignUp, bars: false },
 
@@ -106,7 +85,7 @@ export const User: React.FC = () => {
     },
     {
       path: "/Manager/AddNewUser",
-      component: ManagerAddewuser,
+      component: ManagerAddNewuser,
       bars: false,
     },
 
@@ -120,11 +99,13 @@ export const User: React.FC = () => {
         bars: false,
       },
 
+
       {
-        path: "/User/UserAddNewTask",
-        component: UserAddNewTask,
+        path: "/User/AddNewTask",
+        component: UserAddNewComponent,
         bars: false,
       },
+
 
 
 
