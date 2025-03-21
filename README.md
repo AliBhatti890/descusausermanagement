@@ -5,10 +5,10 @@ Follow these steps to set up and run the project:
 1. Open **PowerShell**.
 2. Install **Bun** globally by running the following command:
    ```sh
-   npm i -g bun
+   npm install
 
 
-
+step: 3
    Setting Up the Backend
 
 To fully use the application, you need to run the backend as well. Follow these steps:
@@ -20,6 +20,11 @@ Run the backend server as described in the backend setup guide.
 👉 Backend Repository: https://github.com/AliBhatti890/descusa-backend-usermanagement
 
 Once both frontend and backend are running, your project should be fully functional! 🚀
+
+
+step 4. open terminal and run command 
+npm run dev-stage
+
 
 
    initial admin Login crediential
