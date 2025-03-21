@@ -1,50 +1,27 @@
-# React + TypeScript + Vite
+## Getting Started
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Follow these steps to set up and run the project:
 
-Currently, two official plugins are available:
+1. Open **PowerShell**.
+2. Install **Bun** globally by running the following command:
+   ```sh
+   npm i -g bun
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+   Setting Up the Backend
 
-- Configure the top-level `parserOptions` property like this:
+To fully use the application, you need to run the backend as well. Follow these steps:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Open the backend project by following the instructions in its README file.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Run the backend server as described in the backend setup guide.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+👉 Backend Repository: https://github.com/AliBhatti890/descusa-backend-usermanagement
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+Once both frontend and backend are running, your project should be fully functional! 🚀
+
+
+   initial admin Login crediential
+   email: ali1@gail.com
+   password : 123

@@ -28,11 +28,11 @@ jobs:
         uses: easingthemes/ssh-deploy@v2
         with:
           host: '${{ secrets.HOST_DNS }}'
-          target: /home/ubuntu/hrms_frontend/hrms-frontend/
+
         env:
           SSH_PRIVATE_KEY: '${{ secrets.EC2_SSH_KEY }}'
           REMOTE_HOST: '${{ secrets.HOST_DNS }}'
           REMOTE_USER: '${{ secrets.USERNAME }}'
-          TARGET: /home/ubuntu/hrms_frontend/hrms-frontend/
+          
       - name: Restart services
         run: pm2 restart 1

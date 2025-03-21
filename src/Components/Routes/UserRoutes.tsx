@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import SignIn from "../Login/SignIn";
-import SignUp from "../Login/SignUp";
 import AdminDashboard from "../Admin Dashboard/adminDashboard";
 import AdminUserList from "../Admin Dashboard/userList";
 import ManagerDashboard from "../Manager Dashboard/managerDashboard";

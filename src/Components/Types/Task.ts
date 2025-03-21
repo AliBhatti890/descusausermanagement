@@ -5,5 +5,6 @@ export interface Tasks
    task_subject: string;
    task_detail: string;
     status: string;
+    assignee_to:string;
    
 }
